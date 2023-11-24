@@ -84,6 +84,8 @@ void *Memory::srealloc(void *ptr, int64_t nbytes)
     else memcpy(ptr,optr,malloc_usable_size(optr));
     free(optr);
   }
+#elif defined(_WIN32)
+  ptr = _aligned_realloc(ptr, nbytes, FFT_MEMALIGN);
 #else
   ptr = realloc(ptr,nbytes);
 #endif
@@ -101,6 +103,8 @@ void Memory::sfree(void *ptr)
 
   #if defined(FFT_USE_TBB_ALLOCATOR)
   scalable_aligned_free(ptr);
+  #elif defined(_WIN32)
+  _aligned_free(ptr);
   #else
   free(ptr);
   #endif
